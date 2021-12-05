@@ -85,7 +85,7 @@ function printf( text, space  ) {
     let SPACE_LENGTH;
 
     cli
-        .option('-q, --query <value...>', 'some query: [name status pid ip gw image hostname cmd]')
+        .option('-q, --query <value...>', 'a query, e.g. name status pid ip')
         .option('-p, --pad <number>', 'a number for padding', 1 )
         .option('-t, --table', 'output in table format');
 
