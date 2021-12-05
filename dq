@@ -63,6 +63,21 @@ function printf( text, space  ) {
     return text;
 }
 
+function listOfQuery(){
+    const list = {
+        name: '.Name',
+        ip: '.NetworkSettings.IPAddress',
+        gateway: '.NetworkSettings.Gateway',
+        image: '.Config.Image',
+        cmd: '.Config.Cmd',
+        status: '.State.Status',
+        hostname: '.Config.Hostname',
+        pid: '.State.pid'
+    };
+
+    log( list );
+}
+
 (async function(){
     const url = '/containers/json?all=1';
     const allCon = await sendRequest( url );
@@ -87,10 +102,19 @@ function printf( text, space  ) {
     cli
         .option('-q, --query <value...>', 'a query, e.g. name status pid ip')
         .option('-p, --pad <number>', 'a number for padding', 1 )
-        .option('-t, --table', 'output in table format');
+        .option('-t, --table', 'output in table format')
+        .option('-l, --list', 'list of queries')
+        ;
 
     cli.parse(process.argv);
     const options = cli.opts();
+
+
+    if( options.list ){
+        listOfQuery();
+        process.exit( 0 );
+    }
+
     if (!options.query) log( cli.help());
     if(options.pad){
         SPACE_LENGTH = parseInt( options.pad);
