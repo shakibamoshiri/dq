@@ -1,0 +1,198 @@
+#!/usr/bin/env node
+
+NODE_DISABLE_COLORS=1
+
+const http = require('http');
+const util = require('util');
+
+const commander = require('commander'); // (normal include)
+const cli = new commander.Command();
+
+const log = console.log.bind( console );
+console.time('time');
+
+function sendRequest( url ){
+    return new Promise(function( resolve, reject ){
+    http.request(
+        {
+          socketPath: '/var/run/docker.sock',
+          path: url
+        },
+        function( response ){
+            const statusCode = response.statusCode;
+            // log( statusCode );
+            if( ! statusCode == 200 ){
+                log( `Error in response: ${statusCode}` );
+                reject( `Error in response: ${statusCode}` );
+            }
+            let allCon = '';
+            response.on( 'data', function( data ){
+                allCon += data;
+            })
+
+            response.on( 'close', function( code ){
+                resolve( allCon );
+            })
+        })
+    .end();
+    })
+}
+/*
+JSON 
+
+.Name 
+.Config.Image 
+.NetworkSettings.Gateway 
+.NetworkSettings.IPAddress 
+.Config.Hostname 
+.State.Status 
+.State.Pid
+.Config.Cmd
+*/
+
+function printf( text, space  ) {
+    text = text + " ";
+    try{ 
+        text = text + ( " ".repeat( ( space - text.length ) ) );
+    } catch( error ){
+        log( error.message );
+        log( `The length ${space} is not enough` );
+        log( 'Please increase space with -s | --space <number>' );
+        process.exit(0);
+    }
+    return text;
+}
+
+(async function(){
+    const url = '/containers/json?all=1';
+    const allCon = await sendRequest( url );
+
+    const conJson = JSON.parse( allCon );
+    const allConId = conJson.map(function( con ){
+        return con.Id;
+    });
+
+    const allConData = allConId.map(function( id ){
+        return `/containers/${id}/json`;
+    })
+    
+    const containers = allConData.map(async function( conUrl ){
+        const c = await sendRequest( conUrl );
+        const r = JSON.parse( c );
+        return r;
+    });
+
+    let SPACE_LENGTH;
+
+    cli
+        .option('-q, --query <value...>', 'some query: [name status pid ip gw image hostname cmd]')
+        .option('-s, --space <number>', 'a number', 1 )
+        .option('-t, --table', 'output in table format');
+
+    cli.parse(process.argv);
+    const options = cli.opts();
+    if (!options.query) log( cli.help());
+    if(options.space){
+        SPACE_LENGTH = parseInt( options.space );
+    }
+
+    const queries = options.query;
+    
+    const tableArray = [];
+    const logArray = [];
+    let table = {};
+    let array = [];
+
+    for( con of containers ){
+        await con.then(async function( json ){
+            for( query of queries ){
+                switch( query ){
+                    case 'image':
+                        const image = json.Config.Image;
+                        array.push( image );
+                        table[ query ] = image;
+                    break;
+                    case 'ip':
+                        const ip = json.NetworkSettings.IPAddress;
+                        array.push( ip );
+                        table[ query ] = ip;
+                    break;
+                    case 'gw':
+                    case 'gateway':
+                        const gw = json.NetworkSettings.Gateway;
+                        array.push( gw );
+                        table[ query ] = gw;
+                    break;
+                    case 'cmd':
+                        const cmd = json.Config.Cmd.join(' ')
+                        array.push( cmd );
+                        table[ query ] = cmd
+                    break;
+                    case 'hostname':
+                        const hostname = json.Config.Hostname;
+                        array.push( hostname );
+                        table[ query ] = hostname;
+                    break;
+                    case 'pid':
+                        const pid = json.State.Pid;
+                        array.push( pid );
+                        table[ query ] = pid;
+                    break;
+                    case 'name':
+                        const name = json.Name.substr(1);
+                        array.push( name );
+                        table[ query ] = name;
+                    break;
+                    case 'status':
+                        const status = json.State.Status;
+                        array.push( status );
+                        table[ query ] = status;
+                    break;
+                }
+            }
+            tableArray.push( table );
+            table = {};
+            logArray.push( array );
+            array = [];
+        })
+    }
+    if( options.table ){
+        console.table( tableArray );
+    } else {
+
+        // max size of each column should be determined
+        const tableSize = {};
+        for( q of queries ){
+            let maxLength = 0;
+            for( obj of tableArray ){
+                const length = String( obj[ q ] ).length;
+                if( length > maxLength ){
+                    maxLength = length;
+                }
+            }
+            tableSize[ q ] = maxLength;
+        }
+        
+        // print the table header
+        for( q of queries ){
+            const r = printf( q, tableSize[ q ] + SPACE_LENGTH );
+            process.stdout.write( r );
+        }
+        process.stdout.write( "\n" );
+
+        // print the table content
+        for( obj of tableArray ){
+            for( q of queries ){
+                const r = printf( obj[ q ], tableSize[ q ] + SPACE_LENGTH );
+                process.stdout.write( r );
+            }
+            process.stdout.write( "\n" );
+        }
+    }
+    
+    process.stdout.write( "\n" );
+    console.timeEnd( 'time' );
+
+// end of IIFE 
+}());
+

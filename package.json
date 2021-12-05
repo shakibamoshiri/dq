@@ -1,0 +1,16 @@
+{
+  "name": "dq",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "commander": "^8.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["docker"],
+  "author": "Shakiba Moshiri",
+  "license": "ISC",
+  "description": "Docker Query"
+}
