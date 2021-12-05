@@ -86,14 +86,14 @@ function printf( text, space  ) {
 
     cli
         .option('-q, --query <value...>', 'some query: [name status pid ip gw image hostname cmd]')
-        .option('-s, --space <number>', 'a number', 1 )
+        .option('-p, --pad <number>', 'a number for padding', 1 )
         .option('-t, --table', 'output in table format');
 
     cli.parse(process.argv);
     const options = cli.opts();
     if (!options.query) log( cli.help());
-    if(options.space){
-        SPACE_LENGTH = parseInt( options.space );
+    if(options.pad){
+        SPACE_LENGTH = parseInt( options.pad);
     }
 
     const queries = options.query;
