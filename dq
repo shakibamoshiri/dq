@@ -71,6 +71,10 @@ function listOfQuery(){
     const list = {
         name: '.Name',
         ip: '.NetworkSettings.IPAddress',
+        ports: '.NetworkSettings.Ports',
+        'ports.con': '.NetworkSettings.Ports',
+        'ports.host': '.NetworkSettings.Ports',
+        hostports: '.NetworkSettings.Ports',
         gateway: '.NetworkSettings.Gateway',
         image: '.Config.Image',
         cmd: '.Config.Cmd',
