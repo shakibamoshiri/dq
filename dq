@@ -82,7 +82,9 @@ function listOfQuery(){
         hostname: '.Config.Hostname',
         pid: '.State.pid',
         exit: '.State.ExitCode',
-        exitcode: '.State.ExitCode'
+        exitcode: '.State.ExitCode',
+        net: '.NetworkSettings.Networks',
+        network: '.NetworkSettings.Networks'
     };
 
     log( list );
@@ -215,6 +217,13 @@ Repository: https://...  `);
                     case 'exitcode':
                         const exitcode = json.State.ExitCode;
                         table[ query ] = exitcode;
+                    break;
+                    case 'net':
+                    case 'nets':
+                    case 'network':
+                    case 'networks':
+                        const networks = Object.keys( json.NetworkSettings.Networks );
+                        table[ query ] = networks;
                     break;
                 }
             }
