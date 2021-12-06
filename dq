@@ -177,6 +177,15 @@ Repository: https://...  `);
                         })
                         table[ query ] = gw;
                     break;
+                    case 'mac':
+                    case 'macaddress':
+                        const tmac = json.NetworkSettings.Networks;
+                        array.push( tmac );
+                        const mac = Object.values( tmac ).map(function( net ){
+                            return net.MacAddress;
+                        })
+                        table[ query ] = mac;
+                    break;
                     case 'cmd':
                         const cmd = json.Config.Cmd.join(' ')
                         array.push( cmd );
