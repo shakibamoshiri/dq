@@ -11,6 +11,9 @@ const cli = new commander.Command();
 const log = console.log.bind( console );
 console.time('time');
 
+
+const CLI_VERSION='1.0.0';
+
 function sendRequest( url ){
     return new Promise(function( resolve, reject ){
     http.request(
@@ -78,6 +81,12 @@ function listOfQuery(){
     log( list );
 }
 
+function moreAboutMe(){
+    log(`version: ${CLI_VERSION}
+Author: Shakiba Moshiri
+Repository: https://...  `);
+}
+
 (async function(){
     const url = '/containers/json?all=1';
     const allCon = await sendRequest( url );
@@ -104,6 +113,7 @@ function listOfQuery(){
         .option('-p, --pad <number>', 'a number for padding', 1 )
         .option('-t, --table', 'output in table format')
         .option('-l, --list', 'list of queries')
+        .option('-v, --version', 'version' )
         ;
 
     cli.parse(process.argv);
@@ -112,6 +122,11 @@ function listOfQuery(){
 
     if( options.list ){
         listOfQuery();
+        process.exit( 0 );
+    }
+
+    if( options.version ){
+        moreAboutMe();
         process.exit( 0 );
     }
 
