@@ -187,6 +187,11 @@ Repository: https://...  `);
                         array.push( status );
                         table[ query ] = status;
                     break;
+                    case 'ports':
+                        const ports =  Object.keys( json.NetworkSettings.Ports );
+                        log( ports );
+                        table[ query ] = ports;
+                    break;
                 }
             }
             tableArray.push( table );
