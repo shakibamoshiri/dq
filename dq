@@ -57,7 +57,7 @@ function printf( text, space  ) {
     } catch( error ){
         log( error.message );
         log( `The length ${space} is not enough` );
-        log( 'Please increase space with -s | --space <number>' );
+        log( 'Please increase space with -p | --pad <number>' );
         process.exit(0);
     }
     return text;
