@@ -167,8 +167,11 @@ Repository: https://...  `);
                     break;
                     case 'gw':
                     case 'gateway':
-                        const gw = json.NetworkSettings.Gateway;
-                        array.push( gw );
+                        const tgw = json.NetworkSettings.Networks;
+                        array.push( tgw );
+                        const gw = Object.values( tgw ).map(function( net ){
+                            return net.Gateway;
+                        })
                         table[ query ] = gw;
                     break;
                     case 'cmd':
