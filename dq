@@ -4,6 +4,7 @@ NODE_DISABLE_COLORS=1
 
 const http = require('http');
 const util = require('util');
+const R    = require( 'ramda' );
 
 const commander = require('commander'); // (normal include)
 const cli = new commander.Command();
@@ -188,9 +189,21 @@ Repository: https://...  `);
                         table[ query ] = status;
                     break;
                     case 'ports':
+                    case 'ports.con':
                         const ports =  Object.keys( json.NetworkSettings.Ports );
-                        log( ports );
                         table[ query ] = ports;
+                    break;
+                    case 'hostports':
+                    case 'ports.host':
+                        const thostports = json.NetworkSettings.Ports;
+                        const hostports =
+                        R.pipe(
+                            R.values,
+                            R.flatten,
+                            R.map( R.values ),
+                            R.map( R.join(":"))
+                        )(thostports);
+                        table[ query ] = hostports;
                     break;
                 }
             }
