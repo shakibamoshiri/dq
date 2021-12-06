@@ -195,6 +195,12 @@ function listOfQuery(){
                 }
             }
             tableSize[ q ] = maxLength;
+
+            // edge case
+            // when a column size is smaller than title size
+            if( q.length > maxLength ){
+                tableSize[ q ] = q.length;
+            }
         }
         
         // print the table header
