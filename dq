@@ -240,6 +240,8 @@ Repository: https://...  `);
                         const networks = Object.keys( json.NetworkSettings.Networks );
                         table[ query ] = networks;
                     break;
+                    default:
+                        table[ query ] = '?';
                 }
             }
             tableArray.push( table );
