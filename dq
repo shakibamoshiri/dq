@@ -80,7 +80,9 @@ function listOfQuery(){
         cmd: '.Config.Cmd',
         status: '.State.Status',
         hostname: '.Config.Hostname',
-        pid: '.State.pid'
+        pid: '.State.pid',
+        exit: '.State.ExitCode',
+        exitcode: '.State.ExitCode'
     };
 
     log( list );
@@ -208,6 +210,11 @@ Repository: https://...  `);
                             R.map( R.join(":"))
                         )(thostports);
                         table[ query ] = hostports;
+                    break;
+                    case 'exit':
+                    case 'exitcode':
+                        const exitcode = json.State.ExitCode;
+                        table[ query ] = exitcode;
                     break;
                 }
             }
