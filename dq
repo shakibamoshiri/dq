@@ -161,8 +161,11 @@ Repository: https://...  `);
                         table[ query ] = image;
                     break;
                     case 'ip':
-                        const ip = json.NetworkSettings.IPAddress;
-                        array.push( ip );
+                        const tip = json.NetworkSettings.Networks;
+                        array.push( tip );
+                        const ip = Object.values( tip ).map(function( net ){
+                            return net.IPAddress;
+                        })
                         table[ query ] = ip;
                     break;
                     case 'gw':
