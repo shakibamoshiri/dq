@@ -174,12 +174,40 @@ Repository: https://...  `);
                     break;
                     case 'gw':
                     case 'gateway':
-                        const tgw = json.NetworkSettings.Networks;
-                        array.push( tgw );
-                        const gw = Object.values( tgw ).map(function( net ){
+                        const tgw = Object.keys( json.NetworkSettings.Networks );
+
+                        const gw =
+                        tgw.map(function( mine ){
+                            return listOfnetworks.filter(function( net ){
+                                return net.Name == mine;
+                            })
+                        }).flat()
+                        .map(function( net ){
+                            return net.IPAM.Config;
+                        }).flat()
+                        .map(function( net ){
                             return net.Gateway;
-                        })
+                        }).flat();
+
                         table[ query ] = gw;
+                    break;
+                    case 'subnet':
+                        const tsubnet = Object.keys( json.NetworkSettings.Networks );
+
+                        const subnet =
+                        tsubnet.map(function( mine ){
+                            return listOfnetworks.filter(function( net ){
+                                return net.Name == mine;
+                            })
+                        }).flat()
+                        .map(function( net ){
+                            return net.IPAM.Config;
+                        }).flat()
+                        .map(function( net ){
+                            return net.Subnet;
+                        }).flat();
+
+                        table[ query ] = subnet;
                     break;
                     case 'mac':
                     case 'macaddress':
@@ -242,6 +270,8 @@ Repository: https://...  `);
                     case 'network':
                     case 'networks':
                         const networks = Object.keys( json.NetworkSettings.Networks );
+
+
                         table[ query ] = networks;
                     break;
                     default:
