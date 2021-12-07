@@ -241,6 +241,10 @@ Repository: https://...  `);
                         array.push( hostname );
                         table[ query ] = hostname;
                     break;
+                    case 'id':
+                        const id = json.Id;
+                        table[ query ] = id;
+                    break;
                     case 'pid':
                         const pid = json.State.Pid;
                         array.push( pid );
