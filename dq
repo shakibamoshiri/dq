@@ -117,7 +117,7 @@ Repository: https://...  `);
     });
 
     const netJson = await sendRequest( netUrl );
-    const networks = JSON.parse( netJson );
+    const listOfnetworks = JSON.parse( netJson );
 
     let SPACE_LENGTH;
 
