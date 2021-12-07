@@ -209,6 +209,19 @@ Repository: https://...  `);
 
                         table[ query ] = subnet;
                     break;
+                    case 'scope':
+                        const tscope = Object.keys( json.NetworkSettings.Networks );
+                        const scope =
+                        tscope.map(function( mine ){
+                            return listOfnetworks.filter(function( net ){
+                                return net.Name == mine;
+                            })
+                        }).flat()
+                        .map(function( net ){
+                            return net.Scope;
+                        })
+                        table[ query ] = scope;
+                    break;
                     case 'mac':
                     case 'macaddress':
                         const tmac = json.NetworkSettings.Networks;
