@@ -98,6 +98,7 @@ Repository: https://...  `);
 
 (async function(){
     const url = '/containers/json?all=1';
+    const netUrl = '/networks';
     const allCon = await sendRequest( url );
 
     const conJson = JSON.parse( allCon );
@@ -114,6 +115,9 @@ Repository: https://...  `);
         const r = JSON.parse( c );
         return r;
     });
+
+    const netJson = await sendRequest( netUrl );
+    const networks = JSON.parse( netJson );
 
     let SPACE_LENGTH;
 
