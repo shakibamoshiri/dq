@@ -9,7 +9,7 @@ const log = console.log.bind( console );
 console.time('time');
 
 
-const CLI_VERSION='1.2.0';
+const CLI_VERSION='1.3.0';
 
 const dockerApi = {
     socketPath: '/var/run/docker.sock',
@@ -61,6 +61,7 @@ function listOfQuery(){
     const list = {
         image: 'Name of an image for a container',
         ip: 'IP address of a container',
+        ip: 'An alias for: ip',
         gateway: 'Gateway of a container',
         gw: 'An alias for: gateway',
         subnet: 'Sub-network of a container',
@@ -74,9 +75,13 @@ function listOfQuery(){
         name: 'Name of a container',
         status: 'Status of a container',
         ports: 'Ports of a container',
+        port: 'An alias for: ports',
         'ports.con': 'An alias for: ports',
         hostports: 'Host ports of a container',
+        hostport: 'An alias for: hostports',
         'ports.host': 'An alias for: hostports',
+        hostips: 'Host-IP of a container',
+        hostip: 'An alias for: hostips',
         exit: 'Exit code of a container',
         exitcode: 'An alias for: exit',
         net: 'Network of a container',

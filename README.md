@@ -52,8 +52,29 @@ That was normal output, but we can have an table output:
 └─────────┴───────────────┴──────────────────┴──────────────┴─────────────────────┴──────────────────┴──────┴───────────┴──────────────┘
 ```
 
-A shot of them:
+A screenshot of two above queries:
 ![screenshot.1.png](./screenshot.1.png)
+
+
+Query for:
+ - name
+ - hostip (host ip[s])
+ - ip (container[s] ip[s])
+ - hostport (host port[s])
+ - port (container[s] port[s])
+ - gw (gateway)
+ - subnet
+ - net
+ - scope
+
+```bash
+./dq -q name hostip ip hostport port gw subnet net scope
+name        hostip                ip         hostport            port           gw         subnet        net    scope
+nginx-3     0.0.0.0,::,0.0.0.0,:: 172.17.0.4 8088,8088,8082,8082 443/tcp,80/tcp 172.17.0.1 172.17.0.0/16 bridge local
+nginx-2     0.0.0.0,::            172.17.0.3 8081,8081           80/tcp         172.17.0.1 172.17.0.0/16 bridge local
+nginx-1     0.0.0.0,::            172.17.0.2 8080,8080           80/tcp         172.17.0.1 172.17.0.0/16 bridge local
+stoic_haibt                                                                     172.17.0.1 172.17.0.0/16 bridge local
+```
 
 
 The same query where there are more:
