@@ -117,6 +117,7 @@ Repository: https://...  `);
         .option('-p, --pad <number>', 'a number for padding', 1 )
         .option('-t, --table', 'output in table format')
         .option('-l, --list', 'list of queries')
+        .option('-T, --time', 'show query time' )
         .option('-v, --version', 'version' )
         ;
 
@@ -320,8 +321,10 @@ Repository: https://...  `);
         }
     }
     
-    process.stdout.write( "\n" );
-    console.timeEnd( 'time' );
+    if( options.time ){
+        process.stdout.write( "\n" );
+        console.timeEnd( 'time' );
+    }
 
 // end of IIFE 
 }());
