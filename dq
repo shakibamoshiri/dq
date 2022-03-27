@@ -33,13 +33,13 @@ function sendRequest( pathApi ){
                 log( `Error in response: ${statusCode}` );
                 reject( `Error in response: ${statusCode}` );
             }
-            let allCon = '';
+            let jsonData = '';
             response.on( 'data', function( data ){
-                allCon += data;
+                jsonData += data;
             })
 
             response.on( 'close', function( code ){
-                resolve( allCon );
+                resolve( jsonData );
             })
         })
     .end();
