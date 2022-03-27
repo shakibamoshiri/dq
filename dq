@@ -19,12 +19,12 @@ const dockerApi = {
     networkPath: '/networks'
 };
 
-function sendRequest( url ){
+function sendRequest( pathApi ){
     return new Promise(function( resolve, reject ){
     http.request(
         {
           socketPath: dockerApi.socketPath,
-          path: url
+          path: pathApi
         },
         function( response ){
             const statusCode = response.statusCode;
