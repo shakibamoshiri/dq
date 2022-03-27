@@ -63,22 +63,30 @@ function printf( text, space  ) {
 
 function listOfQuery(){
     const list = {
-        name: '.Name',
-        ip: '.NetworkSettings.IPAddress',
-        ports: '.NetworkSettings.Ports',
-        'ports.con': '.NetworkSettings.Ports',
-        'ports.host': '.NetworkSettings.Ports',
-        hostports: '.NetworkSettings.Ports',
-        gateway: '.NetworkSettings.Gateway',
-        image: '.Config.Image',
-        cmd: '.Config.Cmd',
-        status: '.State.Status',
-        hostname: '.Config.Hostname',
-        pid: '.State.pid',
-        exit: '.State.ExitCode',
-        exitcode: '.State.ExitCode',
-        net: '.NetworkSettings.Networks',
-        network: '.NetworkSettings.Networks'
+        image: 'Name of a image for a container',
+        ip: 'IP address of a container',
+        gateway: 'Gateway of a container',
+        gw: 'An alias for: gateway',
+        subnet: 'Sub-network of a container',
+        scope: 'Scope of a network for a container',
+        mac: 'MAC address of a container',
+        macaddress: 'An alias for: mac',
+        cmd: 'Coomand that a container has been running with',
+        hostname: 'Hostname of a container',
+        id: 'Full ID of a container',
+        pid: 'Process ID of a container',
+        name: 'Name of a container',
+        status: 'Status of a container',
+        ports: 'Port of a container',
+        'ports.con': 'An alias for: ports',
+        hostports: 'Host port of a container',
+        'ports.host': 'An alias for: hostport',
+        exit: 'Exit code of a container',
+        exitcode: 'An alias for: exit',
+        net: 'Network of a container',
+        nets: 'An alias for: net',
+        network: 'An alias for: net',
+        networks: 'An alias for: net'
     };
 
     log( list );
