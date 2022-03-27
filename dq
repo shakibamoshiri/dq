@@ -91,25 +91,24 @@ Repository: https://...  `);
 }
 
 (async function(){
-    const allCon = await sendRequest( dockerApi.containerPath );
+    const allContainers = await sendRequest( dockerApi.containerPath );
 
-    const conJson = JSON.parse( allCon );
-    const allConId = conJson.map(function( con ){
+    const containers =
+    JSON.parse( allContainers )
+    .map(function( con ){
         return con.Id;
-    });
 
-    const allConData = allConId.map(function( id ){
+    }).map(function( id ){
         return `/containers/${id}/json`;
-    })
-    
-    const containers = allConData.map(async function( conUrl ){
-        const c = await sendRequest( conUrl );
+
+    }).map(async function( containerApiPath ){
+        const c = await sendRequest( containerApiPath );
         const r = JSON.parse( c );
         return r;
     });
 
-    const netJson = await sendRequest( dockerApi.networkPath );
-    const listOfnetworks = JSON.parse( netJson );
+    const networkJson = await sendRequest( dockerApi.networkPath );
+    const listOfnetworks = JSON.parse( networkJson );
 
     let SPACE_LENGTH;
 
