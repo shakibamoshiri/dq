@@ -56,26 +56,6 @@ A screenshot of two above queries:
 ![screenshot.1.png](./screenshot.1.png)
 
 
-Query for:
- - name
- - hostip (host ip[s])
- - ip (container[s] ip[s])
- - hostport (host port[s])
- - port (container[s] port[s])
- - gw (gateway)
- - subnet
- - net
- - scope
-
-```bash
-./dq -q name hostip ip hostport port gw subnet net scope
-name        hostip                ip         hostport            port           gw         subnet        net    scope
-nginx-3     0.0.0.0,::,0.0.0.0,:: 172.17.0.4 8088,8088,8082,8082 443/tcp,80/tcp 172.17.0.1 172.17.0.0/16 bridge local
-nginx-2     0.0.0.0,::            172.17.0.3 8081,8081           80/tcp         172.17.0.1 172.17.0.0/16 bridge local
-nginx-1     0.0.0.0,::            172.17.0.2 8080,8080           80/tcp         172.17.0.1 172.17.0.0/16 bridge local
-stoic_haibt                                                                     172.17.0.1 172.17.0.0/16 bridge local
-```
-
 
 The same query where there are more:
 ```bash
@@ -91,6 +71,26 @@ minio_minio-server_1           172.19.52.2            minio_default         172.
 drone-runner_drone-agent_1     172.19.7.2             drone-runner_default  172.19.7.0/24                172.19.7.1             2942737 running 3000/tcp
 ingress_whoami_1               172.18.0.3             br0                   172.18.0.1/16                172.18.0.1             3732128 running 8000/tcp
 ingress_nginx-acme-companion_1 172.18.0.2             br0                   172.18.0.1/16                172.18.0.1             3732325 running
+```
+
+Another Query for:
+ - name
+ - hostip (host ip)
+ - ip (container ip)
+ - hostport (host port)
+ - port (container port)
+ - gw (gateway)
+ - subnet
+ - net
+ - scope
+
+```bash
+./dq -q name hostip ip hostport port gw subnet net scope
+name        hostip                ip         hostport            port           gw         subnet        net    scope
+nginx-3     0.0.0.0,::,0.0.0.0,:: 172.17.0.4 8088,8088,8082,8082 443/tcp,80/tcp 172.17.0.1 172.17.0.0/16 bridge local
+nginx-2     0.0.0.0,::            172.17.0.3 8081,8081           80/tcp         172.17.0.1 172.17.0.0/16 bridge local
+nginx-1     0.0.0.0,::            172.17.0.2 8080,8080           80/tcp         172.17.0.1 172.17.0.0/16 bridge local
+stoic_haibt                                                                     172.17.0.1 172.17.0.0/16 bridge local
 ```
 
 ## Prerequisite
