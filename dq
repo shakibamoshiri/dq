@@ -266,6 +266,7 @@ function moreAboutMe(){
                         const ports =  Object.keys( json.NetworkSettings.Ports );
                         table[ query ] = ports;
                     break;
+                    case 'hostport':
                     case 'hostports':
                     case 'ports.host':
                         const thostports = json.NetworkSettings.Ports;
@@ -279,6 +280,20 @@ function moreAboutMe(){
                             return array[ 1 ]
                         })
                         table[ query ] = hostports;
+                    break;
+                    case 'hostip':
+                    case 'hostips':
+                        const thostip = json.NetworkSettings.Ports;
+                        const hostip =
+                        Object.values( thostip ).
+                        flat().
+                        map(function( obj ){
+                            return Object.values( obj );
+                        }).
+                        map(function( array ){
+                            return array[ 0 ]
+                        })
+                        table[ query ] = hostip;
                     break;
                     case 'exit':
                     case 'exitcode':
