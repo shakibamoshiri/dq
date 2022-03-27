@@ -5,6 +5,15 @@ Debugging one container using `docker inspect` is okay if we are running just on
 But debugging many of them with different networks, names, ports, etc can be cumbersome.  
 **dq** is a simple CLI to query API, extract some information and show it for all containers.
 
+## Designed for
+Anyone whats to debug small to medium size running containers.  
+Anyone learns and teaches docker and containers:
+ - YouTubers
+ - Bloggers
+ - Course makers
+ - etc
+
+
 ## Examples
 For two containers, one is running, one is not.
 
