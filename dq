@@ -11,7 +11,7 @@ const log = console.log.bind( console );
 console.time('time');
 
 
-const CLI_VERSION='1.1.0';
+const CLI_VERSION='1.1.1';
 
 const dockerApi = {
     socketPath: '/var/run/docker.sock',
@@ -102,9 +102,7 @@ function listOfQuery(){
 }
 
 function moreAboutMe(){
-    log(`version: ${CLI_VERSION}
-Author: Shakiba Moshiri
-Repository: https://...  `);
+    log(`version: ${CLI_VERSION}`);
 }
 
 (async function(){
