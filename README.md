@@ -50,5 +50,31 @@ ingress_nginx-acme-companion_1 172.18.0.2             br0                   172.
 ```
 
 ## Prerequisite
+App has been written in **Node.js**, so having Node.js and npm is needed.
 
 ## How to install
+First clone the repository:
+```bash
+git clone https://github.com/shakibamoshiri/dq.git
+```
+
+Then `cd` to **dq** directory
+```bash
+cd dq
+```
+
+Then run `npm` to install dependencies
+```bash
+npm install
+```
+
+Then test it
+```bash
+./dq -h
+```
+
+You should see help output. At this port you can use it in a local directory or installing globally
+```bash
+sudo chmod +x dq
+sudo install dq -t /usr/local/bin/
+```
