@@ -142,9 +142,7 @@ Repository: https://...  `);
     const queries = options.query;
     
     const tableArray = [];
-    const logArray = [];
     let table = {};
-    let array = [];
 
     for( con of containers ){
         await con.then(async function( json ){
@@ -152,12 +150,10 @@ Repository: https://...  `);
                 switch( query ){
                     case 'image':
                         const image = json.Config.Image;
-                        array.push( image );
                         table[ query ] = image;
                     break;
                     case 'ip':
                         const tip = json.NetworkSettings.Networks;
-                        array.push( tip );
                         const ip = Object.values( tip ).map(function( net ){
                             return net.IPAddress;
                         })
@@ -216,7 +212,6 @@ Repository: https://...  `);
                     case 'mac':
                     case 'macaddress':
                         const tmac = json.NetworkSettings.Networks;
-                        array.push( tmac );
                         const mac = Object.values( tmac ).map(function( net ){
                             return net.MacAddress;
                         })
@@ -224,12 +219,10 @@ Repository: https://...  `);
                     break;
                     case 'cmd':
                         const cmd = json.Config.Cmd.join(' ')
-                        array.push( cmd );
                         table[ query ] = cmd
                     break;
                     case 'hostname':
                         const hostname = json.Config.Hostname;
-                        array.push( hostname );
                         table[ query ] = hostname;
                     break;
                     case 'id':
@@ -238,17 +231,14 @@ Repository: https://...  `);
                     break;
                     case 'pid':
                         const pid = json.State.Pid;
-                        array.push( pid );
                         table[ query ] = pid;
                     break;
                     case 'name':
                         const name = json.Name.substr(1);
-                        array.push( name );
                         table[ query ] = name;
                     break;
                     case 'status':
                         const status = json.State.Status;
-                        array.push( status );
                         table[ query ] = status;
                     break;
                     case 'ports':
@@ -288,8 +278,6 @@ Repository: https://...  `);
             }
             tableArray.push( table );
             table = {};
-            logArray.push( array );
-            array = [];
         })
     }
     if( options.table ){
