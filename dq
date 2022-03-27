@@ -173,6 +173,7 @@ function moreAboutMe(){
                         table[ query ] = image;
                     break;
                     case 'ip':
+                    case 'ips':
                         const tip = json.NetworkSettings.Networks;
                         const ip = Object.values( tip ).map(function( net ){
                             return net.IPAddress;
@@ -261,6 +262,7 @@ function moreAboutMe(){
                         const status = json.State.Status;
                         table[ query ] = status;
                     break;
+                    case 'port':
                     case 'ports':
                     case 'ports.con':
                         const ports =  Object.keys( json.NetworkSettings.Ports );
