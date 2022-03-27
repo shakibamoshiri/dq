@@ -52,6 +52,10 @@ That was normal output, but we can have an table output:
 └─────────┴───────────────┴──────────────────┴──────────────┴─────────────────────┴──────────────────┴──────┴───────────┴──────────────┘
 ```
 
+A shot of them:
+![screenshot.1.png](./screenshot.1.png)
+
+
 The same query where there are more:
 ```bash
 ./dq -q name ip net subnet gw pid status ports
