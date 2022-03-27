@@ -167,7 +167,7 @@ function moreAboutMe(){
     let table = {};
 
     for( con of containers ){
-        await con.then(async function( json ){
+        await con.then(function( json ){
             for( query of queries ){
                 switch( query ){
                     case 'image':
