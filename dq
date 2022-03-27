@@ -41,18 +41,6 @@ function sendRequest( url ){
     .end();
     })
 }
-/*
-JSON 
-
-.Name 
-.Config.Image 
-.NetworkSettings.Gateway 
-.NetworkSettings.IPAddress 
-.Config.Hostname 
-.State.Status 
-.State.Pid
-.Config.Cmd
-*/
 
 function printf( text, space  ) {
     text = text + " ";
