@@ -29,7 +29,7 @@ function sendRequest( pathApi ){
         function( response ){
             const statusCode = response.statusCode;
             // log( statusCode );
-            if( ! statusCode == 200 ){
+            if( statusCode != 200 ){
                 log( `Error in response: ${statusCode}` );
                 reject( `Error in response: ${statusCode}` );
             }
