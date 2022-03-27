@@ -63,7 +63,7 @@ function printf( text, space  ) {
 
 function listOfQuery(){
     const list = {
-        image: 'Name of a image for a container',
+        image: 'Name of an image for a container',
         ip: 'IP address of a container',
         gateway: 'Gateway of a container',
         gw: 'An alias for: gateway',
@@ -77,10 +77,10 @@ function listOfQuery(){
         pid: 'Process ID of a container',
         name: 'Name of a container',
         status: 'Status of a container',
-        ports: 'Port of a container',
+        ports: 'Ports of a container',
         'ports.con': 'An alias for: ports',
-        hostports: 'Host port of a container',
-        'ports.host': 'An alias for: hostport',
+        hostports: 'Host ports of a container',
+        'ports.host': 'An alias for: hostports',
         exit: 'Exit code of a container',
         exitcode: 'An alias for: exit',
         net: 'Network of a container',
@@ -89,7 +89,18 @@ function listOfQuery(){
         networks: 'An alias for: net'
     };
 
-    log( list );
+    const arrayOfLengths =
+    Object.keys( list ).
+    map(function( name ){
+        return name.length
+    });
+
+    const maxLength = Math.max( ...arrayOfLengths );
+
+    for( name in list ){
+        const p = printf( name, maxLength + 1 );
+        log( p, list[name] );
+    }
 }
 
 function moreAboutMe(){
