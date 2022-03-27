@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-NODE_DISABLE_COLORS=1
-
 const http = require('http');
 const util = require('util');
 const R    = require( 'ramda' );
@@ -137,12 +135,18 @@ Repository: https://...  `);
         .option('-t, --table', 'output in table format')
         .option('-l, --list', 'list of queries')
         .option('-T, --time', 'show query time' )
+        .option('-D, --node-disable-colors', 'set NODE_DISABLE_COLORS=1')
         .option('-v, --version', 'version' )
         ;
 
     cli.parse(process.argv);
     const options = cli.opts();
 
+    if( options.nodeDisableColors ){
+        process.env['NODE_DISABLE_COLORS']=1;
+    } else {
+        process.env['NODE_DISABLE_COLORS']=0;
+    }
 
     if( options.list ){
         listOfQuery();
