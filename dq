@@ -9,7 +9,7 @@ const log = console.log.bind( console );
 console.time('time');
 
 
-const CLI_VERSION='1.1.1';
+const CLI_VERSION='1.2.0';
 
 const dockerApi = {
     socketPath: '/var/run/docker.sock',
