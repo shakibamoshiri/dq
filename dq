@@ -15,11 +15,17 @@ console.time('time');
 
 const CLI_VERSION='1.0.0';
 
+const dockerApi = {
+    socketPath: '/var/run/docker.sock',
+    containerPath: '/containers/json?all=1',
+    networkPath: '/networks'
+};
+
 function sendRequest( url ){
     return new Promise(function( resolve, reject ){
     http.request(
         {
-          socketPath: '/var/run/docker.sock',
+          socketPath: dockerApi.socketPath,
           path: url
         },
         function( response ){
@@ -85,9 +91,7 @@ Repository: https://...  `);
 }
 
 (async function(){
-    const url = '/containers/json?all=1';
-    const netUrl = '/networks';
-    const allCon = await sendRequest( url );
+    const allCon = await sendRequest( dockerApi.containerPath );
 
     const conJson = JSON.parse( allCon );
     const allConId = conJson.map(function( con ){
@@ -104,7 +108,7 @@ Repository: https://...  `);
         return r;
     });
 
-    const netJson = await sendRequest( netUrl );
+    const netJson = await sendRequest( dockerApi.networkPath );
     const listOfnetworks = JSON.parse( netJson );
 
     let SPACE_LENGTH;
