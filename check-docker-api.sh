@@ -16,9 +16,11 @@ trap  '__error_handing__ $? $LINENO' ERR
 readonly docker_socket='/var/run/docker.sock';
 
 # check for existence of needed commands
-which docker > /dev/null 2>&1
-which jq > /dev/null 2>&1
-which curl > /dev/null 2>&1 
+{
+    which docker
+    which jq
+    which curl
+} > /dev/null 2>&1
 
 test -S $docker_socket > /dev/null 2>&1
 
