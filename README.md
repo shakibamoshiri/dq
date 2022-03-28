@@ -122,3 +122,7 @@ You should see help output. At this port you can use it in a local directory or 
 sudo chmod +x dq
 sudo install dq -t /usr/local/bin/
 ```
+
+## API compatibility
+You can run [check-docker-api.sh](./check-docker-api.sh) to check your Docker API.  
+`dq` has been tested and compatible with [Docker Engine API (v1.41)](https://docs.docker.com/engine/api/v1.41/) 
