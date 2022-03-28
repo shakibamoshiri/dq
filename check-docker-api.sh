@@ -16,12 +16,12 @@ trap  '__error_handing__ $? $LINENO' ERR
 readonly docker_socket='/var/run/docker.sock';
 
 # check for existence of needed commands
-{
+(
     which docker
     which jq
     which curl
     test -S $docker_socket
-} > /dev/null 2>&1
+) > /dev/null 2>&1
 
 
 docker_api_version=$(curl --silent --unix-socket $docker_socket http://localhost/version | jq -r '.ApiVersion')
