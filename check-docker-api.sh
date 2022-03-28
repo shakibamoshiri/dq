@@ -20,12 +20,12 @@ readonly docker_socket='/var/run/docker.sock';
     which docker
     which jq
     which curl
+    test -S $docker_socket
 } > /dev/null 2>&1
 
-test -S $docker_socket > /dev/null 2>&1
 
-docker_api_version=$(curl --silent --unix-socket /var/run/docker.sock http://localhost/version | jq -r '.ApiVersion')
+docker_api_version=$(curl --silent --unix-socket $docker_socket http://localhost/version | jq -r '.ApiVersion')
 echo "Docker API Version:"
 echo $docker_api_version
 echo "Docker ID:"
-curl --silent --unix-socket /var/run/docker.sock http://localhost/v$docker_api_version/info | jq -r '.ID'
+curl --silent --unix-socket $docker_socket http://localhost/v$docker_api_version/info | jq -r '.ID'
