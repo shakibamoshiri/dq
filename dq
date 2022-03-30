@@ -32,33 +32,42 @@ const dockerApi = {
 };
 
 function sendRequest( pathApi ){
+    const requestOptions = {
+        socketPath: dockerApi.socketPath,
+        path: pathApi
+    };
     return new Promise(function( resolve, reject ){
-    http.request(
-        {
-          socketPath: dockerApi.socketPath,
-          path: pathApi
-        },
+    http.request( requestOptions,
+
         function( response ){
-            const statusCode = response.statusCode;
-            // log( statusCode );
-            if( statusCode != 200 ){
-                log( `Error in response: ${statusCode}` );
-                reject( `Error in response: ${statusCode}` );
-            }
             let jsonData = '';
             response.on( 'data', function( data ){
                 jsonData += data;
             })
 
             response.on( 'close', function( code ){
-                resolve( jsonData );
+                const statusCode = response.statusCode;
+                if( statusCode === 200 ){
+                    resolve( jsonData );
+                } else {
+                    // log( `Error in response.on.close: ${statusCode}` );
+                    // throw new Error( `Error in response.on.close: ${statusCode}` );
+                    log( 'statusCode: ', statusCode );
+                    log( 'pathApi: ', pathApi );
+                    reject( `Error in response.on.close: ${statusCode}` );
+                }
+            })
+            response.on( 'error', function( error ){
+                const statusCode = response.statusCode;
+                log( `Error in response.on.error: ${statusCode}` );
+                reject( `Error in response.on.error: ${statusCode}` );
             })
         })
     .end();
     })
 }
 
-function watchEvents( pathApi, queries ){
+function watchEvents( pathApi, queries, queryType ){
     return new Promise(function( resolve, reject ){
     http.request(
         {
@@ -72,14 +81,50 @@ function watchEvents( pathApi, queries ){
                 reject( `Error in response: ${statusCode}` );
             };
 
-            response.on('readable', () => {
-                // console.log('destroyed: ', response.destroyed);
-                // console.log('readable: ', response.readable);
-                // response.destroy();
-                // log( 'readable.destroyed: ', response.readable );
-                const json = JSON.parse( response.read() );
 
-                resolve( json.id );
+            response.on( 'data', async function( data ){
+                const chunk = data.toString();
+
+                response.pause();
+
+                const json =  JSON.parse( chunk );
+                if( json.Type === 'container' ){
+                    if( json.id !== undefined && json.status !== 'destroy' ){
+                        // resolve( json.id );
+
+                        let tmpContainers = [];
+                        tmpContainers.push( json.id );
+
+                        const containers =
+                        tmpContainers.map(function( id ){
+                            return `/containers/${id}/json`;
+
+                        }).map(async function( containerApiPath ){
+                            const c = await sendRequest( containerApiPath );
+                            const r = JSON.parse( c );
+                            return r;
+                        });
+
+                        const tableArray = await getContainerData( containers, queries );
+                        if( queryType === 'watch' ){
+                            printTableHeader( tableArray, queries );
+                            queryType = '';
+                        }
+                        printTableContent( tableArray, queries );
+
+                    }
+                }
+
+                response.resume();
+            });
+            response.on( 'end', function( data ){
+                log('on end');
+            })
+            response.on( 'fnish', function( data ){
+                log( 'on finish' );
+            })
+            response.on( 'error', function( data ){
+                log( 'on error' );
             });
         })
     .end();
@@ -252,7 +297,7 @@ async function getContainerData( containers, queries ){
             tableArray.push( table );
             table = {};
         }).catch(function( error ){
-            log( error.message );
+            log( 'getContainerData: ', error );
         });
     }
     return tableArray;
@@ -444,27 +489,9 @@ async function dockerQuery( queryType ){
 
     const queries = options.query;
     if( options.watch ){
-        const oneContainerId = await watchEvents( dockerApi.eventsPath, queries )
+        const queryType = 'watch';
+        watchEvents( dockerApi.eventsPath, queries, queryType )
 
-        let tmpContainers = [];
-        tmpContainers.push( oneContainerId );
- 
-        const containers = 
-        tmpContainers.map(function( id ){
-            return `/containers/${id}/json`;
- 
-        }).map(async function( containerApiPath ){
-            const c = await sendRequest( containerApiPath );
-            const r = JSON.parse( c );
-            return r;
-        });
- 
-        const tableArray = await getContainerData( containers, queries );
-        if( queryType !== 'watch' ){
-            printTableHeader( tableArray, queries );
-        }
-        printTableContent( tableArray, queries );
-        dockerQuery( 'watch' );
     } else {
         const tableArray = await getContainerData( containers, queries );
         printTableHeader( tableArray, queries );
