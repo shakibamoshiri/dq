@@ -444,10 +444,10 @@ async function dockerQuery( queryType ){
 
     const queries = options.query;
     if( options.watch ){
-        const oneCcontainerId = await watchEvents( dockerApi.eventsPath, queries )
+        const oneContainerId = await watchEvents( dockerApi.eventsPath, queries )
 
         let tmpContainers = [];
-        tmpContainers.push( oneCcontainerId );
+        tmpContainers.push( oneContainerId );
  
         const containers = 
         tmpContainers.map(function( id ){
