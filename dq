@@ -323,7 +323,8 @@ function printTableHeader( tableArray, queries ){
     }
 
     if( options.table ){
-        console.table( tableArray );
+        return;
+        // console.table( tableArray );
     } else {
 
         // max size of each column should be determined
