@@ -5,6 +5,19 @@ const http = require('http');
 const commander = require('commander'); // (normal include)
 const cli = new commander.Command();
 
+cli
+    .option('-q, --query <value...>', 'a query, e.g. name status pid ip')
+    .option('-p, --pad <number>', 'a number for padding', 1 )
+    .option('-t, --table', 'output in table format')
+    .option('-l, --list', 'list of queries')
+    .option('-W, --watch', 'watch docker events')
+    .option('-T, --time', 'show query time' )
+    .option('-D, --node-disable-colors', 'set NODE_DISABLE_COLORS=1')
+    .option('-v, --version', 'version' ) ;
+
+cli.parse(process.argv);
+const options = cli.opts();
+
 const log = console.log.bind( console );
 console.time('time');
 
@@ -14,7 +27,8 @@ const CLI_VERSION='1.3.1';
 const dockerApi = {
     socketPath: '/var/run/docker.sock',
     containerPath: '/containers/json?all=1',
-    networkPath: '/networks'
+    networkPath: '/networks',
+    eventsPath: '/events'
 };
 
 function sendRequest( pathApi ){
@@ -44,128 +58,43 @@ function sendRequest( pathApi ){
     })
 }
 
-function printf( text, space  ) {
-    text = text + " ";
-    try{ 
-        text = text + ( " ".repeat( ( space - text.length ) ) );
-    } catch( error ){
-        log( error.message );
-        log( `The length ${space} is not enough` );
-        log( 'Please increase space with -p | --pad <number>' );
-        process.exit(0);
-    }
-    return text;
+function watchEvents( pathApi, queries ){
+    return new Promise(function( resolve, reject ){
+    http.request(
+        {
+          socketPath: dockerApi.socketPath,
+          path: pathApi
+        },
+        function( response ){
+            const statusCode = response.statusCode;
+            if( statusCode != 200 ){
+                log( `Error in response: ${statusCode}` );
+                reject( `Error in response: ${statusCode}` );
+            };
+
+            response.on('readable', () => {
+                // console.log('destroyed: ', response.destroyed);
+                // console.log('readable: ', response.readable);
+                // response.destroy();
+                // log( 'readable.destroyed: ', response.readable );
+                const json = JSON.parse( response.read() );
+
+                resolve( json.id );
+            });
+        })
+    .end();
+    })
 }
 
-function listOfQuery(){
-    const list = {
-        image: 'Name of an image for a container',
-        ip: 'IP address of a container',
-        ip: 'An alias for: ip',
-        gateway: 'Gateway of a container',
-        gw: 'An alias for: gateway',
-        subnet: 'Sub-network of a container',
-        scope: 'Scope of a network for a container',
-        mac: 'MAC address of a container',
-        macaddress: 'An alias for: mac',
-        cmd: 'Coomand that a container has been running with',
-        hostname: 'Hostname of a container',
-        id: 'Full ID of a container',
-        pid: 'Process ID of a container',
-        name: 'Name of a container',
-        status: 'Status of a container',
-        ports: 'Ports of a container',
-        port: 'An alias for: ports',
-        'ports.con': 'An alias for: ports',
-        hostports: 'Host ports of a container',
-        hostport: 'An alias for: hostports',
-        'ports.host': 'An alias for: hostports',
-        hostips: 'Host-IP of a container',
-        hostip: 'An alias for: hostips',
-        exit: 'Exit code of a container',
-        exitcode: 'An alias for: exit',
-        net: 'Network of a container',
-        nets: 'An alias for: net',
-        network: 'An alias for: net',
-        networks: 'An alias for: net'
-    };
+// watchEvents( dockerApi.eventsPath )
+// .then(function( containerId ){
+//     log( 'container-id: ' );
+//     log( containerId );
+// }).catch(function( error ){
+//     log( error.message );
+// })
 
-    const arrayOfLengths =
-    Object.keys( list ).
-    map(function( name ){
-        return name.length
-    });
-
-    const maxLength = Math.max( ...arrayOfLengths );
-
-    for( name in list ){
-        const p = printf( name, maxLength + 1 );
-        log( p, list[name] );
-    }
-}
-
-function moreAboutMe(){
-    log(`version: ${CLI_VERSION}`);
-}
-
-(async function(){
-    const allContainers = await sendRequest( dockerApi.containerPath );
-
-    const containers =
-    JSON.parse( allContainers )
-    .map(function( con ){
-        return con.Id;
-
-    }).map(function( id ){
-        return `/containers/${id}/json`;
-
-    }).map(async function( containerApiPath ){
-        const c = await sendRequest( containerApiPath );
-        const r = JSON.parse( c );
-        return r;
-    });
-
-    const networkJson = await sendRequest( dockerApi.networkPath );
-    const listOfnetworks = JSON.parse( networkJson );
-
-    let SPACE_LENGTH;
-
-    cli
-        .option('-q, --query <value...>', 'a query, e.g. name status pid ip')
-        .option('-p, --pad <number>', 'a number for padding', 1 )
-        .option('-t, --table', 'output in table format')
-        .option('-l, --list', 'list of queries')
-        .option('-T, --time', 'show query time' )
-        .option('-D, --node-disable-colors', 'set NODE_DISABLE_COLORS=1')
-        .option('-v, --version', 'version' )
-        ;
-
-    cli.parse(process.argv);
-    const options = cli.opts();
-
-    if( options.nodeDisableColors ){
-        process.env['NODE_DISABLE_COLORS']=1;
-    } else {
-        process.env['NODE_DISABLE_COLORS']=0;
-    }
-
-    if( options.list ){
-        listOfQuery();
-        process.exit( 0 );
-    }
-
-    if( options.version ){
-        moreAboutMe();
-        process.exit( 0 );
-    }
-
-    if (!options.query) log( cli.help());
-    if(options.pad){
-        SPACE_LENGTH = parseInt( options.pad);
-    }
-
-    const queries = options.query;
-    
+async function getContainerData( containers, queries ){
     const tableArray = [];
     let table = {};
 
@@ -322,8 +251,32 @@ function moreAboutMe(){
             }
             tableArray.push( table );
             table = {};
-        })
+        }).catch(function( error ){
+            log( error.message );
+        });
     }
+    return tableArray;
+}
+
+function printf( text, space  ) {
+    text = text + " ";
+    try{ 
+        text = text + ( " ".repeat( ( space - text.length ) ) );
+    } catch( error ){
+        log( error.message );
+        log( `The length ${space} is not enough` );
+        log( 'Please increase space with -p | --pad <number>' );
+        process.exit(0);
+    }
+    return text;
+}
+
+function printTableHeader( tableArray, queries ){
+    let PAD_SIZE = 1;
+    if( options.pad ){
+        PAD_SIZE = parseInt( options.pad );
+    }
+
     if( options.table ){
         console.table( tableArray );
     } else {
@@ -349,26 +302,182 @@ function moreAboutMe(){
         
         // print the table header
         for( q of queries ){
-            const r = printf( q, tableSize[ q ] + SPACE_LENGTH );
+            const r = printf( q, tableSize[ q ] + PAD_SIZE );
             process.stdout.write( r );
         }
         process.stdout.write( "\n" );
+    }
+}
 
+function printTableContent( tableArray, queries ){
+    let PAD_SIZE = 1;
+    if( options.pad ){
+        PAD_SIZE = parseInt( options.pad );
+    }
+
+    if( options.table ){
+        console.table( tableArray );
+    } else {
+
+        // max size of each column should be determined
+        const tableSize = {};
+        for( q of queries ){
+            let maxLength = 0;
+            for( obj of tableArray ){
+                const length = String( obj[ q ] ).length;
+                if( length > maxLength ){
+                    maxLength = length;
+                }
+            }
+            tableSize[ q ] = maxLength;
+
+            // edge case
+            // when a column size is smaller than title size
+            if( q.length > maxLength ){
+                tableSize[ q ] = q.length;
+            }
+        }
+        
         // print the table content
         for( obj of tableArray ){
             for( q of queries ){
-                const r = printf( obj[ q ], tableSize[ q ] + SPACE_LENGTH );
+                const r = printf( obj[ q ], tableSize[ q ] + PAD_SIZE );
                 process.stdout.write( r );
             }
             process.stdout.write( "\n" );
         }
     }
+}
+
+
+function listOfQuery(){
+    const list = {
+        image: 'Name of an image for a container',
+        ip: 'IP address of a container',
+        ip: 'An alias for: ip',
+        gateway: 'Gateway of a container',
+        gw: 'An alias for: gateway',
+        subnet: 'Sub-network of a container',
+        scope: 'Scope of a network for a container',
+        mac: 'MAC address of a container',
+        macaddress: 'An alias for: mac',
+        cmd: 'Coomand that a container has been running with',
+        hostname: 'Hostname of a container',
+        id: 'Full ID of a container',
+        pid: 'Process ID of a container',
+        name: 'Name of a container',
+        status: 'Status of a container',
+        ports: 'Ports of a container',
+        port: 'An alias for: ports',
+        'ports.con': 'An alias for: ports',
+        hostports: 'Host ports of a container',
+        hostport: 'An alias for: hostports',
+        'ports.host': 'An alias for: hostports',
+        hostips: 'Host-IP of a container',
+        hostip: 'An alias for: hostips',
+        exit: 'Exit code of a container',
+        exitcode: 'An alias for: exit',
+        net: 'Network of a container',
+        nets: 'An alias for: net',
+        network: 'An alias for: net',
+        networks: 'An alias for: net'
+    };
+
+    const arrayOfLengths =
+    Object.keys( list ).
+    map(function( name ){
+        return name.length
+    });
+
+    const maxLength = Math.max( ...arrayOfLengths );
+
+    for( name in list ){
+        const p = printf( name, maxLength + 1 );
+        log( p, list[name] );
+    }
+}
+
+function moreAboutMe(){
+    log(`version: ${CLI_VERSION}`);
+}
+
+async function dockerQuery( queryType ){
+    const allContainers = await sendRequest( dockerApi.containerPath );
+
+    const containers =
+    JSON.parse( allContainers )
+    .map(function( con ){
+        return con.Id;
+
+    }).map(function( id ){
+        return `/containers/${id}/json`;
+
+    }).map(async function( containerApiPath ){
+        const c = await sendRequest( containerApiPath );
+        const r = JSON.parse( c );
+        return r;
+    });
+
+    const networkJson = await sendRequest( dockerApi.networkPath );
+    const listOfnetworks = JSON.parse( networkJson );
+
+
+    if( options.nodeDisableColors ){
+        process.env['NODE_DISABLE_COLORS']=1;
+    } else {
+        process.env['NODE_DISABLE_COLORS']=0;
+    }
+
+    if( options.list ){
+        listOfQuery();
+        process.exit( 0 );
+    }
+    
+    if( options.version ){
+        moreAboutMe();
+        process.exit( 0 );
+    }
+
+    if ( !options.query ){
+        log( cli.help());
+    }
+
+    const queries = options.query;
+    if( options.watch ){
+        const oneCcontainerId = await watchEvents( dockerApi.eventsPath, queries )
+
+        let tmpContainers = [];
+        tmpContainers.push( oneCcontainerId );
+ 
+        const containers = 
+        tmpContainers.map(function( id ){
+            return `/containers/${id}/json`;
+ 
+        }).map(async function( containerApiPath ){
+            const c = await sendRequest( containerApiPath );
+            const r = JSON.parse( c );
+            return r;
+        });
+ 
+        const tableArray = await getContainerData( containers, queries );
+        if( queryType !== 'watch' ){
+            printTableHeader( tableArray, queries );
+        }
+        printTableContent( tableArray, queries );
+        dockerQuery( 'watch' );
+    } else {
+        const tableArray = await getContainerData( containers, queries );
+        printTableHeader( tableArray, queries );
+        printTableContent( tableArray, queries );
+    }
+
     
     if( options.time ){
         process.stdout.write( "\n" );
         console.timeEnd( 'time' );
     }
 
-// end of IIFE 
-}());
+};
+
+dockerQuery();
 
