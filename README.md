@@ -8,6 +8,7 @@ But debugging many of them with different networks, names, ports, etc can be cum
 ## Designed for
 Anyone whats to debug small to medium size running containers.  
 Anyone learns and teaches docker and containers:
+ - System Administrator, DevOps, Troubleshooter, etc
  - YouTubers
  - Bloggers
  - Course makers
