@@ -139,7 +139,7 @@ function watchEvents( pathApi, queries, queryType ){
 //     log( error.message );
 // })
 
-async function getContainerData( containers, queries ){
+async function getContainerData( containers, queries, listOfnetworks ){
     const tableArray = [];
     let table = {};
 
@@ -494,8 +494,8 @@ async function dockerQuery( queryType ){
         watchEvents( dockerApi.eventsPath, queries, queryType )
 
     } else {
-        const tableArray = await getContainerData( containers, queries );
-        printTableHeader( tableArray, queries );
+        const tableArray = await getContainerData( containers, queries, listOfnetworks );
+        printTableHeader( tableArray, queries  );
         printTableContent( tableArray, queries );
     }
 
